@@ -239,7 +239,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             double dist = dtot / tot;
 //            LOGGER.i("[DETECTION]: "+ r.getTitle() + ": " + Double.toString(dist));
 
-              initiateTextToSpeech(r.getLocation(), r.getTitle(), (float) dist /8);
+              initiateTextToSpeech(scaled, r.getTitle(), (float) dist /8);
 //            tts.speak("The " + r.getTitle() + " is "
 //                    + String.format("%.2f", dist / 8) + " meters in front of you.", TextToSpeech.QUEUE_ADD, null , "objext_distance");
           }
@@ -320,6 +320,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
             if (results != null)
                 detections = new ArrayList<>(results);
 
+            minimumConfidence = .6f;
             for (final Classifier.Recognition result : results) {
               final RectF location = result.getLocation();
               if (location != null && result.getConfidence() >= minimumConfidence) {
@@ -400,16 +401,23 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     // tts.setLanguage(Locale.US);
     // System.out.println(location);
 
-    int locationMiddle = (int) location.left + location.width() / 2;
+    int locationMiddle = (int) (location.left + location.width() / 2);
+    LOGGER.i("[TEST] " + locationMiddle);
    // int objectWidth = (int) Math.abs(location.right - location.left);
    // int objectHeight = (int) Math.abs(location.top - location.bottom);
 
-   if (locationMiddle <= TF_OD_API_INPUT_SIZE / 3 - location.width() / 2 && locationMiddle >= 0){
-     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
-   } else if (locationMiddle <= TF_OD_API_INPUT_SIZE * 2 / 3 - location.width() / 2 && locationMiddle >= TF_OD_API_INPUT_SIZE / 3 - location.width() / 2) {
-     tts.speak("The " + objectName + " is " + distance + " meters in front of you.", TextToSpeech.QUEUE_ADD, null);
+   if (locationMiddle <= TF_OD_API_INPUT_SIZE / 3.0){
+     tts.speak(
+             String.format("The %s is %.2f meters away, slightly to the left of you.", objectName, distance),
+             TextToSpeech.QUEUE_ADD, null, "Object Annotation");
+   } else if (locationMiddle <= TF_OD_API_INPUT_SIZE * 2.0 / 3.0 ) {
+     tts.speak(
+             String.format("The %s is %.2f meters in front of you.", objectName, distance),
+             TextToSpeech.QUEUE_ADD, null,"Object Annotation");
    } else {
-     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
+     tts.speak(
+             String.format("The %s is %.2f meters away, slightly to the right of you.", objectName, distance),
+             TextToSpeech.QUEUE_ADD, null, "Object Annotation");
    }
    // if (objectWidth <= TF_OD_API_INPUT_SIZE / 3) {  // evaluate it normally
      
