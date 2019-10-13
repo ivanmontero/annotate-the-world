@@ -266,6 +266,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
                 result.setLocation(location);
                 mappedRecognitions.add(result);
+
+                initiateTextToSpeech(location, result.getTitle(), new Size(previewWidth, previewHeight));
               }
             }
 
@@ -331,4 +333,30 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   }
 
 //  private void doDepthInference
+  private void initiateTextToSpeech(RectF location, String objectName, Size screenSize) {
+    TextToSpeech tts = new TextToSpeech(this, null);
+    tts.setLanguage(Locale.US);
+    System.out.println(location);
+//    int objectWidth = Math.abs(location.right - location.left);
+//    int objectHeight = Math.abs(location.top - location.bottom);
+//    if (objectWidth <= screenSize.width / 3) {  // evaluate it normally
+//      if (location.right <= screenSize.width / 3 && location.right >= 0){
+//        tts.speak("The " + objectName + " is slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
+//      } else if (location.right <= screenSize.width * 2 / 3 && location.right >= screenSize.width / 3) {
+//        tts.speak("The " + objectName + " is in front of you.", TextToSpeech.QUEUE_ADD, null);
+//      } else {
+//        tts.speak("The " + objectName + " is slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
+//      }
+//    } else {
+//      int pixFromLeft = location.left;
+//      int pixFromRight = screenSize - location.right;
+//      if (pixFromLeft >= pixFromRight*2) {
+//        tts.speak("The " + objectName + " is slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
+//      } else if (pixFromRight >= pixFromLeft*2) {
+//        tts.speak("The " + objectName + " is slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
+//      } else {
+//        tts.speak("The " + objectName + " is in front of you.", TextToSpeech.QUEUE_ADD, null);
+//      }
+//    }
+  }
 }
