@@ -186,6 +186,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   @Override
   public boolean onTouchEvent(MotionEvent e) {
+    super.onTouchEvent(e);
+    if (detections == null || detections.size() == 0) {
+      return true;
+    }
     switch (e.getActionMasked()) {
       case (MotionEvent.ACTION_DOWN):
 //        tts.speak("Test", TextToSpeech.QUEUE_ADD, null, "Test");
