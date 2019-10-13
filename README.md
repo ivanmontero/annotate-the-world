@@ -3,4 +3,4 @@
 
 An android accessibility application which uses the camera to announce objects in the world and their distances.
 
-[<img src="https://youtu.be/Gvs1cc6u-vk/maxresdefault.jpg" width="50%">](https://youtu.be/Gvs1cc6u-vk)
+[![](https://img.youtube.com/vi/Gvs1cc6u-vk/0.jpg)](https://youtu.be/Gvs1cc6u-vk)
