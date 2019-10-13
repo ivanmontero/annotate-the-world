@@ -17,10 +17,10 @@ limitations under the License.
 * Mail: filippo.aleotti2@unibo.it
 */
 
-package unibo.cvlab.pydnet;
+package com.doubleeye.annotateworld;
 
 import android.content.Context;
-import unibo.cvlab.pydnet.Utils.*;
+import com.doubleeye.annotateworld.Utils.*;
 import java.util.ArrayList;
 import java.util.List;
 

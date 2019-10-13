@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unibo.cvlab.pydnet.demo;
+package com.doubleeye.annotateworld.demo;
 
 import android.Manifest;
 import android.app.Activity;
@@ -42,7 +42,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 import java.nio.ByteBuffer;
 
-import unibo.cvlab.pydnet.R;
+import com.doubleeye.annotateworld.R;
 
 public abstract class CameraActivity extends Activity
         implements OnImageAvailableListener, Camera.PreviewCallback {

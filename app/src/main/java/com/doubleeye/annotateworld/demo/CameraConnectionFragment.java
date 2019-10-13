@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unibo.cvlab.pydnet.demo;
+package com.doubleeye.annotateworld.demo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import unibo.cvlab.pydnet.R;
+import com.doubleeye.annotateworld.R;
 
 @SuppressLint("ValidFragment")
 public class CameraConnectionFragment extends Fragment {

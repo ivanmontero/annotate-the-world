@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "unibo.cvlab.pydnet"
+        applicationId "com.doubleeye.annotateworld"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1

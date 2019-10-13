@@ -17,16 +17,16 @@ limitations under the License.
 * Mail: filippo.aleotti2@unibo.it
 */
 
-package unibo.cvlab.pydnet;
+package com.doubleeye.annotateworld;
 
 import android.content.Context;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
-import unibo.cvlab.pydnet.ModelFactory.GeneralModel;
+import com.doubleeye.annotateworld.ModelFactory.GeneralModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import unibo.cvlab.pydnet.Utils.*;
+import com.doubleeye.annotateworld.Utils.*;
 
 public class Model{
 

@@ -17,7 +17,7 @@ Code from https:
 https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/android/src/org/tensorflow/demo/env/Logger.java
 ==============================================================================*/
 
-package unibo.cvlab.pydnet.demo;
+package com.doubleeye.annotateworld.demo;
 import android.annotation.SuppressLint;
 import android.util.Log;
 

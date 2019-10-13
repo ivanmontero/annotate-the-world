@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package unibo.cvlab.pydnet.demo;
+package com.doubleeye.annotateworld.demo;
 
 import android.content.Context;
 import android.util.AttributeSet;

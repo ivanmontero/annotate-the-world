@@ -1,4 +1,4 @@
-package unibo.cvlab.pydnet.demo;
+package com.doubleeye.annotateworld.demo;
 /*
  * Copyright 2017 The TensorFlow Authors. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.List;
 
-import unibo.cvlab.pydnet.R;
+import com.doubleeye.annotateworld.R;
 
 @SuppressLint("ValidFragment")
 public class LegacyCameraConnectionFragment extends Fragment {

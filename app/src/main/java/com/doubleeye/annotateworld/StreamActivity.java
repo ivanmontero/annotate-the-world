@@ -22,7 +22,7 @@ limitations under the License.
  * Mail: filippo.aleotti2@unibo.it
  */
  
-package unibo.cvlab.pydnet;
+package com.doubleeye.annotateworld;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -34,10 +34,10 @@ import android.util.Size;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.view.Display;
 import android.view.View;
-import unibo.cvlab.pydnet.demo.AutoFitTextureView;
-import unibo.cvlab.pydnet.demo.CameraActivity;
-import unibo.cvlab.pydnet.demo.ImageUtils;
-import unibo.cvlab.pydnet.demo.OverlayView;
+import com.doubleeye.annotateworld.demo.AutoFitTextureView;
+import com.doubleeye.annotateworld.demo.CameraActivity;
+import com.doubleeye.annotateworld.demo.ImageUtils;
+import com.doubleeye.annotateworld.demo.OverlayView;
 
 public class StreamActivity extends CameraActivity implements OnImageAvailableListener{
     private ModelFactory modelFactory;
