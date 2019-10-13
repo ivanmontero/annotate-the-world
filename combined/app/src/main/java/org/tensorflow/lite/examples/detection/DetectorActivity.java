@@ -390,27 +390,35 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     return output;
   }
 
+//  private void doDepthInference
   private void initiateTextToSpeech(RectF location, String objectName, float distance) {
-   int objectWidth = (int) Math.abs(location.right - location.left);
-   int objectHeight = (int) Math.abs(location.top - location.bottom);
-   if (objectWidth <= TF_OD_API_INPUT_SIZE / 3) {  // evaluate it normally
-     if (location.right <= TF_OD_API_INPUT_SIZE / 3 && location.right >= 0){
-       tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
-     } else if (location.right <= TF_OD_API_INPUT_SIZE * 2 / 3 && location.right >= TF_OD_API_INPUT_SIZE / 3) {
-       tts.speak("The " + objectName + " is " + distance + " meters in front of you.", TextToSpeech.QUEUE_ADD, null);
-     } else {
-       tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
-     }
+    // TextToSpeech tts = new TextToSpeech(this, null);
+    // tts.setLanguage(Locale.US);
+    // System.out.println(location);
+
+    int locationMiddle = (int) location.left + location.width() / 2;
+   // int objectWidth = (int) Math.abs(location.right - location.left);
+   // int objectHeight = (int) Math.abs(location.top - location.bottom);
+
+   if (locationMiddle <= TF_OD_API_INPUT_SIZE / 3 - location.width() / 2 && locationMiddle >= 0){
+     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
+   } else if (locationMiddle <= TF_OD_API_INPUT_SIZE * 2 / 3 - location.width() / 2 && locationMiddle >= TF_OD_API_INPUT_SIZE / 3 - location.width() / 2) {
+     tts.speak("The " + objectName + " is " + distance + " meters in front of you.", TextToSpeech.QUEUE_ADD, null);
    } else {
-     int pixFromLeft = (int) location.left;
-     int pixFromRight = TF_OD_API_INPUT_SIZE - (int) location.right;
-     if (pixFromLeft >= pixFromRight*2) {
-       tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
-     } else if (pixFromRight >= pixFromLeft*2) {
-       tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
-     } else {
-       tts.speak("The " + objectName + " is " + distance + " meters in front of you.", TextToSpeech.QUEUE_ADD, null);
-     }
+     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
    }
+   // if (objectWidth <= TF_OD_API_INPUT_SIZE / 3) {  // evaluate it normally
+     
+   // } else {
+   //   int pixFromLeft = (int) location.left;
+   //   int pixFromRight = TF_OD_API_INPUT_SIZE - (int) location.right;
+   //   if (pixFromLeft >= pixFromRight*2) {
+   //     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the left of you.", TextToSpeech.QUEUE_ADD, null);
+   //   } else if (pixFromRight >= pixFromLeft*2) {
+   //     tts.speak("The " + objectName + " is " + distance + " meters away, slightly to the right of you.", TextToSpeech.QUEUE_ADD, null);
+   //   } else {
+   //     tts.speak("The " + objectName + " is " + distance + " meters in front of you.", TextToSpeech.QUEUE_ADD, null);
+   //   }
+   // }
   }
 }
