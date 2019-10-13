@@ -35,6 +35,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -89,6 +91,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   private Matrix frameToCropTransform;
   private Matrix cropToFrameTransform;
+  private Matrix depthToDetectTransform;
+  private Matrix detectToDepthTransform;
 
   private MultiBoxTracker tracker;
 
@@ -125,6 +129,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       finish();
     }
 
+    detections = new ArrayList<>();
     previewWidth = size.getWidth();
     previewHeight = size.getHeight();
 
@@ -139,6 +144,18 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
         ImageUtils.getTransformationMatrix(
             previewWidth, previewHeight,
             cropSize, cropSize,
+            sensorOrientation, MAINTAIN_ASPECT);
+    frameToDepthTransform = ImageUtils.getTransformationMatrix(
+            previewWidth, previewHeight,
+            640,448,
+            sensorOrientation, MAINTAIN_ASPECT);
+    depthToDetectTransform = ImageUtils.getTransformationMatrix(
+            640,448,
+            cropSize, cropSize,
+            sensorOrientation, MAINTAIN_ASPECT);
+    detectToDepthTransform = ImageUtils.getTransformationMatrix(
+            cropSize, cropSize,
+            640,448,
             sensorOrientation, MAINTAIN_ASPECT);
 
     cropToFrameTransform = new Matrix();
@@ -165,24 +182,61 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     depthModel = new ModelFactory(getApplicationContext()).getModel(0);
     depthCroppedFrame =
             Bitmap.createBitmap(640,448, Config.ARGB_8888);
-    frameToDepthTransform = ImageUtils.getTransformationMatrix(
-            previewWidth, previewHeight,
-            640,448,
-            sensorOrientation, MAINTAIN_ASPECT);
-
   }
 
   @Override
   public boolean onTouchEvent(MotionEvent e) {
     switch (e.getActionMasked()) {
       case (MotionEvent.ACTION_DOWN):
-        tts.speak("Test", TextToSpeech.QUEUE_ADD, null, "Test");
+//        tts.speak("Test", TextToSpeech.QUEUE_ADD, null, "Test");
         if (croppedBitmap != null) {
 //          frameToDepthTransform
           final Canvas canvas = new Canvas(depthCroppedFrame);
           canvas.drawBitmap(rgbFrameBitmap, frameToDepthTransform, null);
           float[] pixels = getPixelFromBitmap(depthCroppedFrame);
           float[] inf = doInference(pixels);
+//          int tries = 1;
+//          float[][] runs = new float[tries][640*446];
+//          for (int i = 0; i < tries; i++) {
+//            runs[i] = doInference(pixels);
+//          }
+//          float[] inf = new float[640*446];
+//          for (int i = 0; i <640*446; i++) {
+//            for (int j = 0; j < tries; j++) {
+//              inf[i] += runs[j][i];
+//            }
+//            inf[i] /= tries;
+//          }
+          for (Classifier.Recognition r : detections) {
+            if (r.getConfidence() < .6)
+              continue;
+            RectF scaled = new RectF(r.getLocation());
+            detectToDepthTransform.mapRect(scaled);
+
+            double dtot = 0.0;
+//            LOGGER.i(Integer.toString(inf.length));
+            int tot = (int) (scaled.width()*scaled.height());
+            for (int y = (int)scaled.top; y < (int)scaled.bottom; y++) {
+              for (int x = (int)scaled.left; x < (int)scaled.right; x++) {
+                if (x >= 640 || x < 0) {
+                  tot--;
+                  continue;
+                }
+                if (y >= 448 || y < 0) {
+                  tot--;
+                  continue;
+                }
+//                if ()
+                if (y * 640 + x >= 640*448)
+                  continue;
+                dtot += inf[y*640+x];
+              }
+            }
+            double dist = dtot / tot;
+//            LOGGER.i("[DETECTION]: "+ r.getTitle() + ": " + Double.toString(dist));
+            tts.speak("The " + r.getTitle() + " is "
+                    + String.format("%.2f", dist / 8) + " meters in front of you.", TextToSpeech.QUEUE_ADD, null , "objext_distance");
+          }
 
         }
         return true;
@@ -256,6 +310,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
             final List<Classifier.Recognition> mappedRecognitions =
                 new LinkedList<Classifier.Recognition>();
+
+            if (results != null)
+                detections = new ArrayList<>(results);
 
             for (final Classifier.Recognition result : results) {
               final RectF location = result.getLocation();
@@ -334,9 +391,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
 //  private void doDepthInference
   private void initiateTextToSpeech(RectF location, String objectName, Size screenSize) {
-    TextToSpeech tts = new TextToSpeech(this, null);
-    tts.setLanguage(Locale.US);
-    System.out.println(location);
 //    int objectWidth = Math.abs(location.right - location.left);
 //    int objectHeight = Math.abs(location.top - location.bottom);
 //    if (objectWidth <= screenSize.width / 3) {  // evaluate it normally
