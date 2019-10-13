@@ -39,6 +39,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
+
+import android.speech.tts.TextToSpeech;
 import android.util.Size;
 import android.view.Surface;
 import android.view.View;
@@ -50,8 +52,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.nio.ByteBuffer;
+import java.util.Locale;
+
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
+import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
 
 public abstract class CameraActivity extends AppCompatActivity
     implements OnImageAvailableListener,
@@ -76,6 +81,7 @@ public abstract class CameraActivity extends AppCompatActivity
   private Runnable postInferenceCallback;
   private Runnable imageConverter;
 
+  protected TextToSpeech tts;
   private LinearLayout bottomSheetLayout;
   private LinearLayout gestureLayout;
   private BottomSheetBehavior sheetBehavior;
@@ -93,9 +99,9 @@ public abstract class CameraActivity extends AppCompatActivity
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     setContentView(R.layout.activity_camera);
-    Toolbar toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+    tts = new TextToSpeech(this, null);
+    tts.setLanguage(Locale.US);
 
     if (hasPermission()) {
       setFragment();

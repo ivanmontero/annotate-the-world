@@ -26,13 +26,19 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.os.Bundle;
 import android.os.SystemClock;
+import android.speech.tts.TextToSpeech;
 import android.util.Size;
 import android.util.TypedValue;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+
 import org.tensorflow.lite.examples.detection.customview.OverlayView;
 import org.tensorflow.lite.examples.detection.customview.OverlayView.DrawCallback;
 import org.tensorflow.lite.examples.detection.env.BorderedText;
@@ -41,6 +47,7 @@ import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
+import org.w3c.dom.Text;
 
 /**
  * An activity that uses a TensorFlowMultiBoxDetector and ObjectTracker to detect and then track
@@ -64,12 +71,17 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   OverlayView trackingOverlay;
   private Integer sensorOrientation;
 
+  private Model depthModel;
+
   private Classifier detector;
 
   private long lastProcessingTimeMs;
   private Bitmap rgbFrameBitmap = null;
   private Bitmap croppedBitmap = null;
   private Bitmap cropCopyBitmap = null;
+  private Bitmap depthCroppedFrame = null;
+  private Matrix frameToDepthTransform;
+  private List<Classifier.Recognition> detections;
 
   private boolean computingDetection = false;
 
@@ -146,6 +158,53 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     tracker.setFrameConfiguration(previewWidth, previewHeight, sensorOrientation);
   }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    depthModel = new ModelFactory(getApplicationContext()).getModel(0);
+    depthCroppedFrame =
+            Bitmap.createBitmap(640,448, Config.ARGB_8888);
+    frameToDepthTransform = ImageUtils.getTransformationMatrix(
+            previewWidth, previewHeight,
+            640,448,
+            sensorOrientation, MAINTAIN_ASPECT);
+
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent e) {
+    switch (e.getActionMasked()) {
+      case (MotionEvent.ACTION_DOWN):
+        tts.speak("Test", TextToSpeech.QUEUE_ADD, null, "Test");
+        if (croppedBitmap != null) {
+//          frameToDepthTransform
+          final Canvas canvas = new Canvas(depthCroppedFrame);
+          canvas.drawBitmap(rgbFrameBitmap, frameToDepthTransform, null);
+          float[] pixels = getPixelFromBitmap(depthCroppedFrame);
+          float[] inf = doInference(pixels);
+
+        }
+        return true;
+      default:
+        return true;
+    }
+  }
+
+  private float[] doInference(float[] input){
+    return depthModel.doInference(input, 640,448);
+//    int[] coloredInference = colorMapper.applyColorMap(inference, NUMBER_THREADS);
+//    outputDisp.setPixels(coloredInference, 0, resolution.getWidth(), 0, 0, resolution.getWidth(), resolution.getHeight());
+//    outputDispResized = Bitmap.createScaledBitmap(outputDisp,  halfScreenSize.getWidth(), halfScreenSize.getHeight(), false);
+//    outputRGB = Bitmap.createScaledBitmap(croppedFrame,  halfScreenSize.getWidth(), halfScreenSize.getHeight(), false);
+  }
+
+
+//  @Override
+//  public void onClick(View v) {
+//    super.onClick(v);
+//    tts.speak("Test", TextToSpeech.QUEUE_ADD, null, "Test");
+//  }
 
   @Override
   protected void processImage() {
@@ -253,4 +312,23 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   protected void setNumThreads(final int numThreads) {
     runInBackground(() -> detector.setNumThreads(numThreads));
   }
+
+  public static float[] getPixelFromBitmap(Bitmap frame){
+    int numberOfPixels = frame.getWidth()*frame.getHeight()*3;
+    int[] pixels = new int[frame.getWidth()*frame.getHeight()];
+    frame.getPixels(pixels, 0, frame.getWidth(), 0, 0, frame.getWidth(), frame.getHeight());
+
+    float[] output = new float[numberOfPixels];
+
+    int i = 0;
+    for (int pixel : pixels) {
+      output[i * 3] = Color.red(pixel) /(float)255.;
+      output[i * 3 + 1] = Color.green(pixel) / (float)255.;
+      output[i * 3+2] = Color.blue(pixel) / (float)255.;
+      i+=1;
+    }
+    return output;
+  }
+
+//  private void doDepthInference
 }
